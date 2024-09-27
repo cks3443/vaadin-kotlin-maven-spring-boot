@@ -1,14 +1,11 @@
-package org.wajtr.experiments.vaadinkotlin;
+package org.wajtr.experiments.vaadinkotlin
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
 
 @SpringBootApplication
-public class AyyahMain {
+open class ApplicationMain
 
-    public static void main(String[] args) {
-        SpringApplication.run(AyyahMain.class, args);
-    }
-
+fun main(args: Array<String>) {
+    SpringApplication.run(ApplicationMain::class.java, *args)
 }
