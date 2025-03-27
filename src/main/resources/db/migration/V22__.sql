@@ -1,0 +1,5 @@
+ALTER TABLE receipt
+    ADD member_id BIGINT;
+
+ALTER TABLE receipt
+    ADD CONSTRAINT FK_RECEIPT_ON_MEMBER FOREIGN KEY (member_id) REFERENCES member (id);

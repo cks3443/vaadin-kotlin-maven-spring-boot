@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="w-full mt-2 px-3"
+     th:fragment="calendarFragment"
+>
+
+    <div class="isolate flex flex-auto flex-col overflow-auto bg-white"
+    >
+        <div class="flex flex-col">
+            <div id="calendar-container"
+                 class="sticky top-0 z-30 flex flex-row divided-x bg-white ring-black/5 sm:pr-8 overflow-x-auto">
+
+                <a
+                        th:each="date : ${dateList}"
+                        th:href="@{/(dateClicked=${date})}"
+                        th:id="${dc == date ? 'selected-date' : ''}"
+                >
+
+                    <div
+                            class="-mr-px flex flex-col divide-gray-100 border-r border-gray-100 text-sm/6 text-gray-500 sm:grid">
+                        <button
+                                th:text="${#temporals.dayOfWeekNameShort(date)}"
+                                type="button"
+                                class="flex flex-col items-center pt-2 pb-3">M <span
+                                class="mt-1 flex size-8 items-center justify-center font-semibold text-gray-900">10</span>
+                        </button>
+
+                        <div class="flex items-center w-13 justify-center py-3">
+                        <span
+                                th:text="${#temporals.day(date)}"
+                                th:classappend="${dc == date ? 'bg-indigo-600 text-white' : 'size-8 text-gray-900'}"
+                                class="size-8 rounded-full flex items-center justify-center font-semibold">11</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const container = document.getElementById('calendar-container');
+                    const selectedDate = document.getElementById('selected-date');
+
+                    if (container && selectedDate) {
+                        // Calculate position to center the selected date
+                        const containerWidth = container.offsetWidth;
+                        const selectedPos = selectedDate.offsetLeft;
+                        const selectedWidth = selectedDate.offsetWidth;
+
+                        // Center the selected date in the container
+                        container.scrollLeft = selectedPos - (containerWidth / 2) + (selectedWidth / 2);
+                    }
+                });
+            </script>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

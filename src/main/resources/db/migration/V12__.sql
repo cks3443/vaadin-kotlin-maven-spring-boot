@@ -1,0 +1,13 @@
+ALTER TABLE member
+DROP
+COLUMN created_at;
+
+ALTER TABLE member
+DROP
+COLUMN updated_at;
+
+ALTER TABLE member
+    ADD created_at TIMESTAMP WITHOUT TIME ZONE;
+
+ALTER TABLE member
+    ADD updated_at TIMESTAMP WITHOUT TIME ZONE;

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full bg-white" style="font-family: 'Noto Sans KR'">
+<head th:include="fragments/headFragment::headFragment">
+
+</head>
+
+<body class="h-full">
+<!-- The outer <form> uses HTMX to submit -->
+<!-- hx-post => POST request to /dashboard/box -->
+<!-- hx-target => Where the response is inserted -->
+<!-- hx-swap => Decide how to swap content (e.g., outerHTML, innerHTML, etc.) -->
+
+<div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true"
+     th:fragment="modalDialogsOriginalFragment"
+>
+    <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
+
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+
+            <div class="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6 w-full max-w-md lg:max-w-lg">
+
+                <form th:object="${locker}"
+                      th:action="@{/dashboard/locker/update}"
+                      th:method="${'POST'}"
+                      class="space-y-6">
+                    <div class="space-y-12">
+                        <div class="border-b border-gray-900/10 pb-12">
+                            <h2 class="text-base/7 font-semibold text-gray-900">락커 정보</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600">크로스핏 박스 락커의 기본 정보를 입력해주세요.</p>
+
+                            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+
+                                <input type="number" th:field="*{id}" class="hidden"/>
+
+                                <!-- Locker Number (nid) -->
+                                <div class="sm:col-span-4">
+                                    <label for="nid" class="block text-sm/6 font-medium text-gray-900">락커 번호</label>
+                                    <div class="mt-2">
+                                        <input type="number" id="nid" name="nid" th:field="*{nid}" required
+                                               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                               placeholder="101" readonly/>
+                                    </div>
+                                </div>
+
+                                <!-- Member Selection -->
+                                <div class="sm:col-span-4">
+                                    <label for="email" class="block text-sm/6 font-medium text-gray-900">이메일</label>
+                                    <div class="mt-2 grid grid-cols-1">
+                                        <input type="text"
+                                               id="email"
+                                               name="email"
+                                               th:field="*{email}"
+                                               class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 px-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                               placeholder="사용자 이메일 입력"
+                                               hx-post="/v1/member/recommend"
+                                               hx-trigger="keyup changed delay:500ms"
+                                               hx-vals="js:{email: document.getElementById('email').value}"
+                                               hx-target="#email-results-container"
+                                               hx-indicator="#email-loading">
+                                    </div>
+                                    <div class="relative">
+                                        <div id="email-loading" class="htmx-indicator flex justify-center py-2" th:if="false">
+                                            <svg class="animate-spin h-5 w-5 text-indigo-600"
+                                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                        stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        </div>
+                                        <div id="email-results-container">
+                                            <select id="email-results"
+                                                    name="member"
+                                                    class="mt-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                    onchange="document.getElementById('email').value = this.value; this.style.display = 'none';"
+                                                    style="display: none;">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Locker Usage Period -->
+                                <div class="sm:col-span-4">
+                                    <label class="block text-sm/6 font-medium text-gray-900">사용 기간</label>
+                                    <p class="mt-1 text-sm/6 text-gray-600">락커 사용 시작일과 종료일을 설정합니다.</p>
+
+                                    <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                                        <!-- Start Date -->
+                                        <div class="sm:col-span-3">
+                                            <label for="startDate"
+                                                   class="block text-sm/6 font-medium text-gray-900">시작일</label>
+                                            <div class="mt-2">
+                                                <input type="date" id="startDate" name="startDate"
+                                                       th:field="*{startDate}"
+                                                       class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"/>
+                                            </div>
+                                        </div>
+
+                                        <!-- End Date -->
+                                        <div class="sm:col-span-3">
+                                            <label for="endDate"
+                                                   class="block text-sm/6 font-medium text-gray-900">종료일</label>
+                                            <div class="mt-2">
+                                                <input type="date" id="endDate" name="endDate" th:field="*{endDate}"
+                                                       class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quick Date Selection Buttons -->
+                                    <div class="mt-3 flex flex-wrap gap-2">
+                                        <button type="button"
+                                                onclick="setLockerPeriod(1)"
+                                                class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                            1개월
+                                        </button>
+                                        <button type="button"
+                                                onclick="setLockerPeriod(3)"
+                                                class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                            3개월
+                                        </button>
+                                        <button type="button"
+                                                onclick="setLockerPeriod(6)"
+                                                class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                            6개월
+                                        </button>
+                                        <button type="button"
+                                                onclick="setLockerPeriod(12)"
+                                                class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                            12개월
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submission buttons -->
+                    <div class="mt-6 flex items-center justify-end gap-x-6">
+                        <button type="button" class="text-sm/6 font-semibold text-gray-900"
+                                onclick="window.history.back()">취소
+                        </button>
+                        <button type="submit"
+                                class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            저장
+                        </button>
+                    </div>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Include HTMX (e.g., from CDN or local) -->
+<script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
+<!-- Add this JavaScript at the end of your form before the closing </form> tag -->
+<script>
+    function setLockerPeriod(months) {
+        const startDate = document.getElementById('startDate');
+        const endDate = document.getElementById('endDate');
+
+        // Set today as start date if not already set
+        if (!startDate.value) {
+            const today = new Date();
+            startDate.value = today.toISOString().split('T')[0];
+        }
+
+        // Calculate end date
+        const start = new Date(startDate.value);
+        const end = new Date(start);
+        end.setMonth(end.getMonth() + months);
+
+        // Set end date
+        endDate.value = end.toISOString().split('T')[0];
+    }
+</script>
+
+</body>
+</html>

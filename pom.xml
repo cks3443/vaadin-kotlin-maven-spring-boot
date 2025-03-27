@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>org.wajtr.experiments</groupId>
-    <artifactId>vaadin-kotlin-maven</artifactId>
+    <artifactId>boxlife_vaadin</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>

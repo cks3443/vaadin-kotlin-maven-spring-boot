@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full bg-white" style="font-family: 'Noto Sans KR'">
+<head th:include="fragments/headFragment::headFragment">
+
+</head>
+
+<body class="h-full">
+<!-- The outer <form> uses HTMX to submit -->
+<!-- hx-post => POST request to /dashboard/box -->
+<!-- hx-target => Where the response is inserted -->
+<!-- hx-swap => Decide how to swap content (e.g., outerHTML, innerHTML, etc.) -->
+
+<div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true"
+     th:fragment="modalDialogsOriginalFragment"
+>
+    <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
+
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+
+            <div class="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6 w-full max-w-md lg:max-w-lg">
+                <form th:object="${member}"
+                      th:action="@{/dashboard/member/update}"
+                      th:method="${'POST'}"
+                      class="space-y-6">
+                    <div class="space-y-12">
+                        <div class="border-b border-gray-900/10 pb-12">
+                            <h2 class="text-base/7 font-semibold text-gray-900">회원 정보</h2>
+                            <p class="mt-1 text-sm/6 text-gray-600">크로스핏 박스 회원의 기본 정보를 입력해주세요.</p>
+
+                            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                <!-- ID (read-only for edit mode) -->
+                                <div class="sm:col-span-4" th:if="${member.id != null}">
+                                    <label for="id" class="block text-sm/6 font-medium text-gray-900">ID</label>
+                                    <div class="mt-2">
+                                        <input type="text" id="id" name="id" th:field="*{id}"
+                                               class="block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 sm:text-sm/6"
+                                               readonly/>
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="sm:col-span-4">
+                                    <label for="email" class="block text-sm/6 font-medium text-gray-900">이메일</label>
+                                    <div class="mt-2">
+                                        <input type="email" id="email" name="email" th:field="*{email}" required
+                                               class="block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                               placeholder="example@email.com" readonly/>
+                                    </div>
+                                </div>
+
+                                <!-- Name -->
+                                <div class="sm:col-span-4">
+                                    <label for="name" class="block text-sm/6 font-medium text-gray-900">이름</label>
+                                    <div class="mt-2">
+                                        <input type="text" id="name" name="name" th:field="*{name}" required
+                                               class="block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                               placeholder="홍길동" readonly/>
+                                    </div>
+                                </div>
+
+                                <!-- Telephone Number -->
+                                <div class="sm:col-span-4">
+                                    <label for="telephoneNumber"
+                                           class="block text-sm/6 font-medium text-gray-900">전화번호</label>
+                                    <div class="mt-2">
+                                        <input type="tel" id="telephoneNumber" name="telephoneNumber"
+                                               th:field="*{telephoneNumber}"
+                                               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                               placeholder="010-XXXX-XXXX" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}"/>
+                                    </div>
+                                    <p class="mt-1 text-sm/6 text-gray-500">형식: 010-XXXX-XXXX</p>
+                                </div>
+
+                                <!-- Birthday -->
+                                <div class="sm:col-span-4">
+                                    <label for="birthday" class="block text-sm/6 font-medium text-gray-900">생년월일</label>
+                                    <div class="mt-2">
+                                        <input type="date" id="birthday" name="birthday" th:field="*{birthday}"
+                                               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"/>
+                                    </div>
+                                </div>
+
+                                <!-- Gender -->
+                                <div class="sm:col-span-4">
+                                    <label class="block text-sm/6 font-medium text-gray-900">성별</label>
+                                    <div class="mt-2 space-y-4">
+                                        <div class="flex items-center gap-x-3">
+                                            <input id="gender-male" name="gender" type="radio" th:field="*{gender}"
+                                                   th:value="M"
+                                                   class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"/>
+                                            <label for="gender-male" class="block text-sm/6 font-medium text-gray-900">남성</label>
+                                        </div>
+                                        <div class="flex items-center gap-x-3">
+                                            <input id="gender-female" name="gender" type="radio" th:field="*{gender}"
+                                                   th:value="F"
+                                                   class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"/>
+                                            <label for="gender-female"
+                                                   class="block text-sm/6 font-medium text-gray-900">여성</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <!-- Membership Period -->
+                                <div class="sm:col-span-4">
+                                    <label class="block text-sm/6 font-medium text-gray-900">회원권 기간</label>
+                                    <p class="mt-1 text-sm/6 text-gray-600">회원의 시작일과 종료일을 설정합니다.</p>
+
+                                    <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                                        <!-- Start Date -->
+                                        <div class="sm:col-span-3">
+                                            <label for="startDate"
+                                                   class="block text-sm/6 font-medium text-gray-900">시작일</label>
+                                            <div class="mt-2">
+                                                <input type="date" id="startDate" name="startDate"
+                                                       th:field="*{startDate}"
+                                                       class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"/>
+                                            </div>
+                                        </div>
+
+                                        <!-- End Date -->
+                                        <div class="sm:col-span-3">
+                                            <label for="endDate"
+                                                   class="block text-sm/6 font-medium text-gray-900">종료일</label>
+                                            <div class="mt-2">
+                                                <input type="date" id="endDate" name="endDate" th:field="*{endDate}"
+                                                       class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quick Date Selection Buttons -->
+                                    <div class="mt-3 flex flex-wrap gap-2">
+                                        <button type="button"
+                                                onclick="setMembershipPeriod(1)"
+                                                class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                            1개월
+                                        </button>
+                                        <button type="button"
+                                                onclick="setMembershipPeriod(3)"
+                                                class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                            3개월
+                                        </button>
+                                        <button type="button"
+                                                onclick="setMembershipPeriod(6)"
+                                                class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                            6개월
+                                        </button>
+                                        <button type="button"
+                                                onclick="setMembershipPeriod(12)"
+                                                class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                            12개월
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                                <!-- Active Status -->
+                                <div class="col-span-full">
+                                    <div class="flex gap-3">
+                                        <div class="flex h-6 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="isActive" name="isActive" type="checkbox"
+                                                       th:field="*{isActive}"
+                                                       class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                <svg class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white"
+                                                     viewBox="0 0 14 14" fill="none">
+                                                    <path class="opacity-0 group-has-checked:opacity-100"
+                                                          d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round"
+                                                          stroke-linejoin="round"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="text-sm/6">
+                                            <label for="isActive" class="font-medium text-gray-900">활성 상태</label>
+                                            <p class="text-gray-500">회원의 계정이 활성화되어 있는지 여부를 설정합니다.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <th:block th:if="${locker}">
+                                    <div class="px-2 sm:px-6 lg:px-8">
+                                        <label class="block py-3 text-sm/6 font-medium text-gray-900">락커</label>
+                                        <div class="flex flex-row flex-wrap gap-2 sm:gap-4">
+                                            <a th:href="@{/dashboard/locker/{id}/edit(id=${locker.id})}"
+                                            >
+                                                <div th:text="${locker.nid}"
+                                                     th:classappend="${locker.bgColor}"
+                                                     class="h-10 w-10 sm:h-15 sm:w-15 border rounded-sm border-gray-400 text-md font-semibold flex items-center justify-center"
+                                                ></div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </th:block>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submission buttons -->
+                    <div class="mt-6 flex items-center justify-end gap-x-6">
+                        <button type="button" class="text-sm/6 font-semibold text-gray-900"
+                                onclick="window.history.back()">취소
+                        </button>
+                        <button type="submit"
+                                class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            저장
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Replace the existing notification block -->
+        <th:block th:if="${successMessage}">
+            <div x-data="{ show: true }"
+                 x-init="setTimeout(() => show = false, 1000)"
+                 x-show="show"
+                 x-transition:leave="transition ease-in duration-300"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 translate-y-4"
+                 aria-live="assertive"
+                 class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6"
+            >
+                <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+                    <div class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white ring-1 shadow-lg ring-black/5">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="shrink-0">
+                                    <svg class="size-6 text-green-400" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5"
+                                         stroke="currentColor" aria-hidden="true" data-slot="icon">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-3 w-0 flex-1 pt-0.5">
+                                    <p class="text-sm font-medium text-gray-900">성공!</p>
+                                    <p class="mt-1 text-sm text-gray-500" th:text="${successMessage}"></p>
+                                </div>
+                                <div class="ml-4 flex shrink-0">
+                                    <button type="button"
+                                            class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden"
+                                            @click="show = false">
+                                        <span class="sr-only">닫기</span>
+                                        <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+                                             data-slot="icon">
+                                            <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+
+        <!-- Include HTMX (e.g., from CDN or local) -->
+        <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
+        <!-- Add this JavaScript at the end of your form before the closing </form> tag -->
+        <script>
+            function setMembershipPeriod(months) {
+                // Set start date to today if not already set
+                const startDateInput = document.getElementById('startDate');
+                if (!startDateInput.value) {
+                    const today = new Date();
+                    startDateInput.value = today.toISOString().split('T')[0];
+                }
+
+                // Calculate end date based on months from start date
+                const startDate = new Date(startDateInput.value);
+                const endDate = new Date(startDate);
+                endDate.setMonth(endDate.getMonth() + months);
+
+                // Set the end date input
+                document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+            }
+        </script>
+
+</body>
+</html>

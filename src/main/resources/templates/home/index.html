@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full bg-white"
+      style="font-family: 'Noto Sans KR', serif"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <head th:include="fragments/headFragment :: headFragment"></head>
+    <link rel="manifest" href="/manifest.json"/>
+</head>
+
+<body class="w-full bg-white flex flex-col items-center">
+
+<div class="max-w-md w-full h-screen">
+    <nav th:replace="home/navFragment :: navFragment"></nav>
+    <div th:replace="home/calendarFragment :: calendarFragment"></div>
+    <div th:replace="home/wodTextFragment :: wodTextFragment"></div>
+    <div th:replace="home/eventsFragment :: eventsFragment"></div>
+</div>
+
+<script src="https://unpkg.com/htmx.org@1.9.6"></script>
+
+<!-- Global notification live region, render this permanently at the end of the document -->
+<div
+        aria-live="assertive"
+        class="pointer-events-none fixed inset-0 flex items-end px-4 py-6
+         sm:items-start sm:p-6 z-50"
+        id="install-banner-container"
+        style="display: none;"
+>
+    <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+        <div
+                class="pointer-events-auto w-full max-w-sm overflow-hidden
+             rounded-lg bg-white ring-1 ring-black/5 shadow-lg"
+        >
+            <div class="p-4">
+                <div class="flex items-center">
+                    <div class="flex w-0 flex-1 justify-between">
+                        <p class="w-0 flex-1 text-sm font-medium text-gray-900">
+                            Your App is installable!
+                        </p>
+                        <button
+                                type="button"
+                                id="installBannerBtn"
+                                class="ml-3 shrink-0 rounded-md bg-white text-sm font-medium
+                     text-indigo-600 hover:text-indigo-500 focus:outline-none
+                     focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Install
+                        </button>
+                    </div>
+                    <div class="ml-4 flex shrink-0">
+                        <button
+                                type="button"
+                                class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500
+                     focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                aria-label="Close install banner"
+                                onclick="document.getElementById('install-banner-container').style.display='none';"
+                        >
+                            <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path
+                                        d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72
+                     3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72
+                     3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75
+                     0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let deferredPrompt = null;
+
+    // Listen for the "beforeinstallprompt" event, which fires when
+    // the browser detects your PWA is installable
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the default mini-infobar prompt on mobile
+        e.preventDefault();
+        // Store the event so you can trigger it later
+        deferredPrompt = e;
+
+        // Show the banner by removing display: none;
+        document.getElementById('install-banner-container').style.display = 'flex';
+    });
+
+    // When user clicks the install button
+    document.getElementById('installBannerBtn').addEventListener('click', () => {
+        if (deferredPrompt) {
+            // Show the native install prompt
+            deferredPrompt.prompt();
+
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                } else {
+                    console.log('User dismissed the A2HS prompt');
+                }
+                deferredPrompt = null;
+                // Hide the banner
+                document.getElementById('install-banner-container').style.display = 'none';
+            });
+        }
+    });
+</script>
+</body>
+</html>

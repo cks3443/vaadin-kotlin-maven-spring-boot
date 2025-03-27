@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full bg-white" style="font-family: 'Noto Sans KR',serif">
+<head th:fragment="headFragment">
+    <meta charset="UTF-8">
+    <!-- Mobile screen settings -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+    <title th:text="${pageTitle}">Sign In</title>
+
+</head>
+<body class="h-full">
+<!--
+  This example requires updating your template:
+
+  ```
+  <html class="h-full bg-white">
+  <body class="h-full">
+  ```
+-->
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-sm" th:if="true">
+        <img class="mx-auto h-10 w-auto"
+             th:if="false"
+             src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company"/>
+        <h2 class="text-center text-2xl/9 font-bold tracking-tight text-gray-900" th:text="|${boxName} 가입|">가입하기</h2>
+    </div>
+    <div class="p-6 mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form class="space-y-6" action="#" method="POST" th:action="${'/signup'}">
+            <div>
+                <label for="email" class="block text-sm/6 font-medium text-gray-900">이메일</label>
+                <div class="mt-2">
+                    <input type="email" name="email" id="email" autocomplete="email" required
+                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                    <div th:if="${#fields.hasErrors('signUpForm.email')}"
+                         th:errors="*{signUpForm.email}" class="text-red-500 text-sm"></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex items-center justify-between">
+                    <label for="name" class="block text-sm/6 font-medium text-gray-900">이름</label>
+                </div>
+                <div class="mt-2">
+                    <input type="text" name="name" id="name" autocomplete="name" required
+                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                </div>
+            </div>
+
+            <!-- Telephone Number Field -->
+            <div>
+                <label for="telephoneNumber" class="block text-sm/6 font-medium text-gray-900">전화번호</label>
+                <div class="mt-2">
+                    <input type="tel" name="telephoneNumber" id="telephoneNumber"
+                           placeholder="010-XXXX-XXXX" required
+                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                </div>
+                <p class="mt-1 text-sm/6 text-gray-500">형식: 010-XXXX-XXXX</p>
+            </div>
+
+            <!-- Birthday Field -->
+            <div>
+                <label for="birthday" class="block text-sm/6 font-medium text-gray-900">생년월일</label>
+                <div class="mt-2">
+                    <input type="date" name="birthday" id="birthday"
+                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                </div>
+            </div>
+
+            <!-- Gender Selection -->
+            <div>
+                <label class="block text-sm/6 font-medium text-gray-900">성별</label>
+                <div class="mt-2 space-y-4">
+                    <div class="flex items-center gap-x-3">
+                        <input id="gender-male" name="gender" type="radio" value="M" checked
+                               class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"/>
+                        <label for="gender-male" class="block text-sm/6 font-medium text-gray-900">남성</label>
+                    </div>
+                    <div class="flex items-center gap-x-3">
+                        <input id="gender-female" name="gender" type="radio" value="F"
+                               class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"/>
+                        <label for="gender-female" class="block text-sm/6 font-medium text-gray-900">여성</label>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm/6 font-medium text-gray-900">비밀번호</label>
+                <div class="mt-2">
+                    <input type="password" name="password" id="password" autocomplete="new-password" required
+                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                    <div th:if="${#fields.hasErrors('signUpForm.password')}" th:errors="*{signUpForm.password}"
+                         class="text-red-500 text-sm"></div>
+                </div>
+            </div>
+
+            <div>
+                <label for="passwordConfirm" class="block text-sm/6 font-medium text-gray-900">비밀번호 확인</label>
+                <div class="mt-2">
+                    <input type="password" name="passwordConfirm" id="passwordConfirm" autocomplete="new-password"
+                           required
+                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                    <div th:if="${#fields.hasErrors('signUpForm.passwordConfirm')}"
+                         th:errors="*{signUpForm.passwordConfirm}" class="text-red-500 text-sm"></div>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                        class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    가입
+                </button>
+            </div>
+        </form>
+
+        <p class="mt-10 text-center text-sm/6 text-gray-500" th:if="false">
+            <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">회원가입</a>
+        </p>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      class="h-full bg-white" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="mt-8 px-3 " th:fragment="eventsFragment" id="events-list-container">
+    <div class="border-b border-gray-900/10 pb-2 mb-3">
+        <h2 class="text-base/7 font-semibold text-gray-900 px-2">오늘의 이벤트</h2>
+
+    </div>
+    <!-- Current Events List -->
+    <div class="space-y-3"
+         th:if="${#lists.size(sc.events) > 0}"
+    >
+        <h3 class="text-sm/6 font-medium text-gray-900 px-2">등록된 이벤트</h3>
+        <div class="flex flex-col gap-2" id="sortable-events">
+            <div class="rounded-md bg-gray-50 py-1 px-2 border border-gray-100"
+                 th:each="event : ${sc.eventListFiltered}"
+                 th:data-id="${event.id}"
+            >
+                <div
+                        class="flex items-center justify-end pb-1 mb-2 border-b border-gray-200 last:border-0"
+                        th:if="${isManager}"
+                >
+                    <button
+                            type="button"
+                            th:data-hx-delete="@{/event/{id}/delete(id=${event.id}, dateClicked=${dateClicked})}"
+                            data-hx-trigger="click"
+                            data-hx-target="#events-list-container"
+                            data-hx-swap="outerHTML"
+                            class="text-md text-red-600 hover:text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <ul class="list list-disc pl-7">
+                    <li class="text-sm mr-4"
+                        th:text="|시간: ${#temporals.format(event.startTime, 'HH:mm')} - ${#temporals.format(event.endTime, 'HH:mm')}|">
+                    </li>
+                    <li class="text-sm mr-4"
+                        th:text="|참여자: ${#lists.size(event.personList)}|">
+                    </li>
+                </ul>
+                <div class="w-full flex mt-3 mb-1 justify-center">
+                    <!-- For non-authenticated users -->
+                    <th:block sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/login}">
+                            <button type="button"
+                                    class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
+                                참여
+                            </button>
+                        </a>
+                    </th:block>
+
+                    <!-- For authenticated users -->
+                    <th:block th:if="${!isManager}">
+                        <th:block sec:authorize="isAuthenticated()">
+                            <button type="button"
+                                    th:if="${event.joined}"
+                                    th:data-hx-post="@{/event/{id}/person(id=${event.id}, dateClicked=${dateClicked})}"
+                                    data-hx-trigger="click"
+                                    data-hx-target="#events-list-container"
+                                    data-hx-swap="outerHTML"
+                                    class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                참여
+                            </button>
+                            <button type="button"
+                                    th:unless="${event.joined}"
+                                    th:data-hx-post="@{/event/{id}/person(id=${event.id}, dateClicked=${dateClicked})}"
+                                    data-hx-trigger="click"
+                                    data-hx-target="#events-list-container"
+                                    data-hx-swap="outerHTML"
+                                    class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
+                                예약
+                            </button>
+                        </th:block>
+                    </th:block>
+
+                    <th:block th:if="${isManager}">
+                        <button type="button"
+                                th:if="${!isOpen} or ${eventId != event.id}"
+                                th:data-hx-get="@{/(dateClicked=${dateClicked}, eventId=${event.id}, isOpen=true )}"
+                                data-hx-trigger="click"
+                                data-hx-target="#events-list-container"
+                                data-hx-swap="outerHTML"
+                                class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            참여자 보기
+                        </button>
+                        <button type="button"
+                                th:if="${isOpen} and ${eventId == event.id}"
+
+                                th:data-hx-get="@{/(dateClicked=${dateClicked}, eventId=${event.id}, isOpen=false )}"
+                                data-hx-trigger="click"
+                                data-hx-target="#events-list-container"
+                                data-hx-swap="outerHTML"
+                                class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            참여자 가리기
+                        </button>
+                    </th:block>
+                </div>
+
+                <div class="w-full flex flex-row flex-wrap gap-1"
+                     th:if="${isOpen} and ${eventId == event.id}"
+                >
+                    <button
+                            th:each="person : ${event.personList}"
+                            th:text="${person.member.name}"
+                            type="button"
+                            class="rounded-sm bg-white px-2 py-1 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
+                        Button text
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Add New Event Form -->
+    <div id="event-container"
+         th:if="${isManager}"
+         class="mt-8 w-full px-2">
+        <a th:href="@{/schedule/{id}/event(id=${sc.id})}">
+            <div class="sm:col-span-6 flex justify-center">
+                <button type="button"
+                        class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    이벤트 추가
+                </button>
+            </div>
+        </a>
+    </div>
+
+    <!-- Message for Event Operations -->
+    <div id="event-message"
+         class="hidden transition-opacity duration-500 ease-in-out text-green-600 text-center my-4"></div>
+
+    <th:block th:if="false and ${isManager}">
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const sortableEvents = document.getElementById('sortable-events');
+                let dragSrcEl = null;
+
+                function handleDragStart(e) {
+                    this.style.opacity = '0.4';
+                    dragSrcEl = this;
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/html', this.innerHTML);
+                }
+
+                function handleDragOver(e) {
+                    if (e.preventDefault) {
+                        e.preventDefault();
+                    }
+                    e.dataTransfer.dropEffect = 'move';
+                    return false;
+                }
+
+                function handleDragEnter() {
+                    this.classList.add('over');
+                }
+
+                function handleDragLeave() {
+                    this.classList.remove('over');
+                }
+
+                function handleDrop(e) {
+                    if (e.stopPropagation) {
+                        e.stopPropagation();
+                    }
+                    if (dragSrcEl !== this) {
+                        dragSrcEl.innerHTML = this.innerHTML;
+                        this.innerHTML = e.dataTransfer.getData('text/html');
+                    }
+                    return false;
+                }
+
+                function handleDragEnd() {
+                    this.style.opacity = '1';
+                    items.forEach(function (item) {
+                        item.classList.remove('over');
+                    });
+
+                    const order = [];
+                    document.querySelectorAll('#sortable-events > div').forEach(function (el, index) {
+                        order.push({
+                            id: el.getAttribute('data-id'),
+                            position: index
+                        });
+                    });
+
+                    if (confirm('Do you want to save the new order?')) {
+                        fetch('/event/reorder', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(order)
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            }).then(data => {
+                            console.log('Order saved:', data);
+                        }).catch(error => {
+                            console.error('Error saving order:', error);
+                        });
+                    }
+                }
+
+                let items = sortableEvents.querySelectorAll('div');
+                items.forEach(function (item) {
+                    item.setAttribute('draggable', 'true');
+                    item.addEventListener('dragstart', handleDragStart, false);
+                    item.addEventListener('dragenter', handleDragEnter, false);
+                    item.addEventListener('dragover', handleDragOver, false);
+                    item.addEventListener('dragleave', handleDragLeave, false);
+                    item.addEventListener('drop', handleDrop, false);
+                    item.addEventListener('dragend', handleDragEnd, false);
+                });
+            });
+        </script>
+    </th:block>
+
+
+    <th:block th:if="${isManager}">
+        <!-- jsDelivr :: Sortable :: Latest (https://www.jsdelivr.com/package/npm/sortablejs) -->
+        <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+        <script>
+            const IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+            document.addEventListener('DOMContentLoaded', function () {
+                new Sortable(document.getElementById('sortable-events'), {
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    fallbackOnBody: true,
+                    swapThreshold: 0.65,
+                    direction: 'vertical',
+                    forceFallback: IOS, // Force fallback for iOS
+                    onEnd: function (/**Event*/evt) {
+                        let itemEl = evt.item;  // dragged HTMLElement
+                        const order = [];
+                        document.querySelectorAll('#sortable-events > div').forEach(function (el, index) {
+                            order.push({
+                                id: el.getAttribute('data-id'),
+                                position: index
+                            });
+                        });
+
+                        if (confirm('Do you want to save the new order?')) {
+                            fetch('/event/reorder', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(order)
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                }).then(data => {
+                                console.log('Order saved:', data);
+                            }).catch(error => {
+                                console.error('Error saving order:', error);
+                            });
+                        }
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</div>
+</body>
+</html>

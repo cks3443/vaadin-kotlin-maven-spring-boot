@@ -1,0 +1,20 @@
+{
+  "name": "Boxslife",
+  "short_name": "Boxslife",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
+  "icons": [
+    {
+      "src": "/img/icons/icon-demo-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/img/icons/icon-demo-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
